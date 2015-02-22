@@ -6,8 +6,15 @@ and handle responses to web service requests by handling messages.  The messageB
 components to publish messages that other components subscribe to listen for.  Because there is no explicit binding between
 the action triggers and the action responders, mopotent is a good tool for "separation of concerns".
 
+One of the positive effects of separating the execution of actions from the handling of the consequences/responses is that you can add extra handlers without needing to modify the action execution code.  This is classic separation of concerns.  The mechanism that makes this work is the messageBus.
+
+An example:
+-----------
+
+Clicking a button loads data from a web service. Instead of handling the response directly and invoking code directly, mopotent enables you to broadcast a message with the reponse.  This way, any piece of code that subscribes to receive that kind of message will receive the response (as message data) and will be able to handle it-- all without knowing anything about the request or requester of the web service.
+
 mopotent also aims to be a very simple framework for building UIs in JavaScript-- all without getting in the way of what
-you are trying to build.  So I've tried to keep limitations and restrictions to a minimum.
+you are trying to build.  So I've tried to keep limitations and restrictions to a minimum.  You can use template substitution (similar to what you can do with angularjs or mustachejs) to declare items to be substituted into views.  Quite simple....
 
 Dependencies
 ============
@@ -25,13 +32,13 @@ Publishing Messages
 To publish a message, simply write:
 
 ```
-messageBus.publish(<message type>, <message>);
+messageBus.publish({message type}, {message});
 ```
 
 where:
 
-* <message type> : The message type (this is a string)
-* <message> : The actual message (which is any JavaScript object)
+* {message type} : The message type (this is a string)
+* {message} : The actual message (which is any JavaScript object)
 
 Example:
 
@@ -45,14 +52,14 @@ Subscribing to Receive Messages
 To subscribe to receive a message, simply write:
 
 ```
-messageBus.subscribe(<message type>, <context>, <handler function>);
+messageBus.subscribe({message type}, {context}, {handler function});
 ```
 
 where:
 
-* <message type> : The message type (this is a string)
-* <context> : The object which contains a <message type> property that is a function (i.e. <handler function>)
-* <handler function> : The function to be invoked with the message, whose signature is: function (<message>)
+* {message type} : The message type (this is a string)
+* {context} : The object which contains a <message type> property that is a function (i.e. <handler function>)
+* {handler function} : The function to be invoked with the message, whose signature is: function (<message>)
 
 Example:
 
@@ -78,8 +85,8 @@ Subscribing to Receive Messages in a Controller
 
 A controller can subscribe to receive messages as follows:
 
-Invoke the addSubscription(<message type>, <handler function>) method on the controller instance.
-This call will set a <message type> property on the controller instance whose value is the <handler function>.
+Invoke the addSubscription({message type}, {handler function}) method on the controller instance.
+This call will set a {message type} property on the controller instance whose value is the {handler function}.
 
 Example:
 
@@ -95,7 +102,7 @@ nvc.addSubscription('editCustomer', function (customer) {
 
 Controllers send messages by either of these 2 options:
 
-* calling the messageBus.publish(<message type>, <message>) method
+* calling the messageBus.publish({message type}, {message}) method
 * invoking an HTTP request whose results are published in a message
 
 Example of a controller issuing an HTTP GET request and publishing the response:
@@ -113,25 +120,25 @@ The signatures for the calls you can make on a controller to issue such HTTP req
 HTTP GET:
 
 ```
-<controller>.getData(<url>, <message type>)
+{controller}.getData({url}, {message type})
 ```
 
 HTTP PUT:
 
 ```
-<controller>.putData(<url>, <data to put>, <message type>)
+{controller}.putData({url}, {data to put}, {message type})
 ```
 
 HTTP POST:
 
 ```
-<controller>.postData(<url>, <data to post>, <message type>)
+{controller}.postData({url}, {data to post}, {message type})
 ```
 
 HTTP DELETE:
 
 ```
-<controller>.deleteData(<url>, <message type>)
+{controller}.deleteData({url}, {message type})
 ```
 
 
