@@ -1,0 +1,76 @@
+<html>
+    <head>
+        <title>mopotent</title>
+        <link rel="stylesheet" type="text/css" href="examples.css" />
+        <script type="text/javascript" src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache.min.js"></script>
+        <script type="text/javascript" src="../lib/messageBus.js"></script>
+        <script type="text/javascript" src="../lib/mopotent.js"></script>
+    </head>
+    <body>
+        <button id="btnStart">Start</button>
+        <button id="btnStop">Stop</button>
+        <button id="btnShowList">Show Customers</button>
+        <button id="btnFetchCustomers">Fetch Customers</button>
+        
+        <div -onmessageshow="ShowtimeStart" -onmessagehide="ShowtimeStop">
+            The show is ON!
+        </div>
+        
+        <div -onmessageshow="ShowtimeStart" -onmessagehide="ShowtimeStop">
+            I really like this.
+        </div>
+
+        <table -onmessageshow="ShowtimeStart" -onmessagehide="ShowtimeStop">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                </tr>
+            </thead>
+            <tbody -onmessagerepeat="gotCustomers" -iteratorvar="c">
+                <tr onclick="messageBus.publish('editCustomer', {{c}});">
+                    <td>{{c.$index}}</td>
+                    <td>{{c.name}}</td>
+                    <td>{{c.phone}}</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div -onmessage="editCustomer" -datavar="cust">
+            Name: <input type="text" value="{{cust.name}}" /><br/>
+            Age: <input type="text" value="{{cust.age}}" />
+        </div>
+        
+        <textarea style="width: 500px;height: 400px;" id="nvcDump"></textarea>
+        
+        <script type="text/javascript">
+            $('#btnStart').click(function () {
+                messageBus.publish('ShowtimeStart', {});
+            });
+
+            $('#btnStop').click(function () {
+                messageBus.publish('ShowtimeStop', {});
+            });
+            
+            var customers = [
+                {name: 'Joe Smith', phone: '617-555-0001', age: 30},
+                {name: 'Sally Field', phone: '617-555-0002', age: 59},
+                {name: 'Rich Little', phone: '617-555-0003', age: 39}
+            ];
+            $('#btnShowList').click(function () {
+                messageBus.publish('gotCustomers', customers);
+            });
+            
+            var nvc = mopotent.setController();
+            nvc.addSubscription('editCustomer', function (customer) {
+                $('#nvcDump').val(JSON.stringify(customer, undefined, 2));
+            });
+            
+            $('#btnFetchCustomers').click(function () {
+                nvc.getData('/mopotent-sample-customers', 'gotCustomers');
+            });
+        </script>
+    </body>
+</html>

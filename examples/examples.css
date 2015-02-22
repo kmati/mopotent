@@ -1,0 +1,27 @@
+body{
+    font-style: normal;
+    font-family: "Lucida Grande","Helvetica Neue","Helvetica","Arial","Verdana","sans-serif";
+    font-size: 1.75em;
+    line-height: 1.4286;
+    font-weight: light;
+    -webkit-font-smoothing: antialiased;
+    color: #333;
+    text-align: center;
+    width: 600px;
+}
+
+p{
+    display: block;
+    -webkit-margin-before: 1em;
+    -webkit-margin-after: 1em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+}
+
+.tinyText{
+    font-size: 10pt;
+}
+
+.center{
+    text-align: center;
+}
